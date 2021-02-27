@@ -1,3 +1,4 @@
+//! Scaling
 pub mod flag;
 pub use self::flag::Flags;
 

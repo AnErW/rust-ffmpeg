@@ -8,7 +8,7 @@ use codec::Context;
 use frame;
 use util::format;
 use {packet, AudioService, ChannelLayout, Error};
-
+/// The audio decoder.
 pub struct Audio(pub Opened);
 
 impl Audio {
@@ -36,57 +36,59 @@ impl Audio {
             }
         }
     }
-
+    /// Get the sample rate of decoded audio.
     pub fn rate(&self) -> u32 {
         unsafe { (*self.as_ptr()).sample_rate as u32 }
     }
-
+    /// Get the total amount of channels.
     pub fn channels(&self) -> u16 {
         unsafe { (*self.as_ptr()).channels as u16 }
     }
-
+    /// Get the format of decoded audio.
     pub fn format(&self) -> format::Sample {
         unsafe { format::Sample::from((*self.as_ptr()).sample_fmt) }
     }
-
+    /// Set the format that the decoder will try to decode in
+    /// this format if it can.
     pub fn request_format(&mut self, value: format::Sample) {
         unsafe {
             (*self.as_mut_ptr()).request_sample_fmt = value.into();
         }
     }
-
+    /// Get the frame total amount. 
     pub fn frames(&self) -> usize {
         unsafe { (*self.as_ptr()).frame_number as usize }
     }
-
+    /// Get the number of bytes per packet.
+    /// May return 0 in some WAV based audio codecs.
     pub fn align(&self) -> usize {
         unsafe { (*self.as_ptr()).block_align as usize }
     }
-
+    /// Get the audio channel layout.
     pub fn channel_layout(&self) -> ChannelLayout {
         unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout) }
     }
-
+    /// Set the audio channel layout.
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
             (*self.as_mut_ptr()).channel_layout = value.bits();
         }
     }
-
+    /// Set the audio channel layout that the decoder will try to use this if it can.
     pub fn request_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
             (*self.as_mut_ptr()).request_channel_layout = value.bits();
         }
     }
-
+    /// Get the audio service type which is set by codec.
     pub fn audio_service(&mut self) -> AudioService {
         unsafe { AudioService::from((*self.as_mut_ptr()).audio_service_type) }
     }
-
+    /// Get the max bit rate of audio.
     pub fn max_bit_rate(&self) -> usize {
         unsafe { (*self.as_ptr()).rc_max_rate as usize }
     }
-
+    /// Get the number of samples per channels in an audio frame.
     pub fn frame_size(&self) -> u32 {
         unsafe { (*self.as_ptr()).frame_size as u32 }
     }

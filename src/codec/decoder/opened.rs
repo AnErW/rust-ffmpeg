@@ -5,10 +5,12 @@ use super::{Audio, Decoder, Subtitle, Video};
 use codec::{Context, Profile};
 use ffi::*;
 use {media, packet, Error, Frame, Rational};
-
+/// The context of decoder.
 pub struct Opened(pub Decoder);
 
 impl Opened {
+    /// Check if the codec is video codec and 
+    /// return itself if the codec is matched.
     pub fn video(self) -> Result<Video, Error> {
         if self.medium() == media::Type::Video {
             Ok(Video(self))
@@ -16,7 +18,9 @@ impl Opened {
             Err(Error::InvalidData)
         }
     }
-
+    /// Check if the codec is audio codec and 
+    /// return itself if the codec is matched.
+    
     pub fn audio(self) -> Result<Audio, Error> {
         if self.medium() == media::Type::Audio {
             Ok(Audio(self))
@@ -25,6 +29,8 @@ impl Opened {
         }
     }
 
+    /// Check if there has any medium.
+    
     pub fn subtitle(self) -> Result<Subtitle, Error> {
         if self.medium() == media::Type::Subtitle {
             Ok(Subtitle(self))

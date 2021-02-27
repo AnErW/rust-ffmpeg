@@ -1,3 +1,5 @@
+//! Encoding/Decoding library
+
 pub mod flag;
 pub use self::flag::Flags;
 
@@ -17,7 +19,7 @@ pub use self::context::Context;
 
 pub mod capabilities;
 pub use self::capabilities::Capabilities;
-
+/// Codec Module
 pub mod codec;
 
 pub mod parameters;
@@ -51,15 +53,20 @@ use std::ffi::CStr;
 use std::str::from_utf8_unchecked;
 
 use ffi::*;
-
+/// Return the version of `libavcodec`
 pub fn version() -> u32 {
     unsafe { avcodec_version() }
 }
-
+/// Return the compile-time configuration of `libavcodec`
 pub fn configuration() -> &'static str {
     unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_configuration()).to_bytes()) }
 }
-
+/// Return the license of `libavcodec`
 pub fn license() -> &'static str {
     unsafe { from_utf8_unchecked(CStr::from_ptr(avcodec_license()).to_bytes()) }
+}
+
+#[test]
+fn test_it() {
+    println!("{},\n{},\n{}",self::version(),self::configuration(),self::license());
 }

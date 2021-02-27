@@ -8,10 +8,11 @@ use super::Encoder as Super;
 use codec::{traits, Context};
 use util::format;
 use {frame, packet, ChannelLayout, Dictionary, Error};
-
+/// The context of audio encoder.
 pub struct Audio(pub Super);
 
 impl Audio {
+    /// Initialize the audio encoder and codec context.
     pub fn open(mut self) -> Result<Encoder, Error> {
         unsafe {
             match avcodec_open2(self.as_mut_ptr(), ptr::null(), ptr::null_mut()) {
@@ -21,6 +22,7 @@ impl Audio {
         }
     }
 
+    /// Initialize audio decoder and codec context with given audio encoder.
     pub fn open_as<E: traits::Encoder>(mut self, codec: E) -> Result<Encoder, Error> {
         unsafe {
             if let Some(codec) = codec.encoder() {
@@ -33,7 +35,7 @@ impl Audio {
             }
         }
     }
-
+    /// Initialize the audio codec with given options.
     pub fn open_with(mut self, options: Dictionary) -> Result<Encoder, Error> {
         unsafe {
             let mut opts = options.disown();
@@ -47,7 +49,7 @@ impl Audio {
             }
         }
     }
-
+    /// Initialize audio codec with given options and encoder.
     pub fn open_as_with<E: traits::Encoder>(
         mut self,
         codec: E,
@@ -69,43 +71,43 @@ impl Audio {
             }
         }
     }
-
+    /// Set the encode sample rate.
     pub fn set_rate(&mut self, rate: i32) {
         unsafe {
             (*self.as_mut_ptr()).sample_rate = rate;
         }
     }
-
+    /// Get the sample rate from encoder.
     pub fn rate(&self) -> u32 {
         unsafe { (*self.as_ptr()).sample_rate as u32 }
     }
-
+    /// Set the encode format.
     pub fn set_format(&mut self, value: format::Sample) {
         unsafe {
             (*self.as_mut_ptr()).sample_fmt = value.into();
         }
     }
-
+    /// Get the encode format from encoder.
     pub fn format(&self) -> format::Sample {
         unsafe { format::Sample::from((*self.as_ptr()).sample_fmt) }
     }
-
+    /// Set the encode channel layout.
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
             (*self.as_mut_ptr()).channel_layout = value.bits();
         }
     }
-
+    /// Get the encode channel layout from encoder.
     pub fn channel_layout(&self) -> ChannelLayout {
         unsafe { ChannelLayout::from_bits_truncate((*self.as_ptr()).channel_layout) }
     }
-
+    /// Set the encode channel number.
     pub fn set_channels(&mut self, value: i32) {
         unsafe {
             (*self.as_mut_ptr()).channels = value;
         }
     }
-
+    /// Get the total amount of channel from encoder.
     pub fn channels(&self) -> u16 {
         unsafe { (*self.as_ptr()).channels as u16 }
     }
@@ -189,7 +191,7 @@ impl Encoder {
             }
         }
     }
-
+    /// Get the frame size of encoder.
     pub fn frame_size(&self) -> u32 {
         unsafe { (*self.as_ptr()).frame_size as u32 }
     }

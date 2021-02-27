@@ -1,3 +1,5 @@
+//! Toolkit for audio/video editing.
+
 #[cfg(feature = "software-scaling")]
 pub mod scaling;
 

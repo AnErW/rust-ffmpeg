@@ -167,6 +167,18 @@ impl DerefMut for Output {
     }
 }
 
+
+/// Dump out the detail infomation of output format, basicially
+/// including duration, bitrate, streams, metadata, etc.
+/// # Parameters
+/// `ctx`: the output context to analyze  
+/// `index`: the index of stream to dump infomation about  
+/// `url`: the path to export/print the detail infomation
+///
+/// To dump a input context, see: [input::dump]
+///
+/// [output::dump]: super::input::dump
+
 pub fn dump(ctx: &Output, index: i32, url: Option<&str>) {
     let url = url.map(|u| CString::new(u).unwrap());
 

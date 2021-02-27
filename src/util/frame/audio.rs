@@ -7,7 +7,7 @@ use ffi::*;
 use libc::{c_int, c_ulonglong};
 use util::format;
 use ChannelLayout;
-
+/// The audio frame.
 #[derive(PartialEq, Eq)]
 pub struct Audio(Frame);
 
@@ -29,11 +29,13 @@ impl Audio {
 
 impl Audio {
     #[inline(always)]
+    /// Create an empty audio frame.
     pub fn empty() -> Self {
         unsafe { Audio(Frame::empty()) }
     }
 
     #[inline]
+    /// Create an audio frame with sample format, total sample number and layout channels map.
     pub fn new(format: format::Sample, samples: usize, layout: ChannelLayout) -> Self {
         unsafe {
             let mut frame = Audio::empty();
@@ -44,6 +46,7 @@ impl Audio {
     }
 
     #[inline]
+    /// Get the format of audio frame.
     pub fn format(&self) -> format::Sample {
         unsafe {
             if (*self.as_ptr()).format == -1 {
@@ -55,6 +58,7 @@ impl Audio {
     }
 
     #[inline]
+    /// Set the format of audio frame.
     pub fn set_format(&mut self, value: format::Sample) {
         unsafe {
             (*self.as_mut_ptr()).format = mem::transmute::<AVSampleFormat, c_int>(value.into());
@@ -62,6 +66,7 @@ impl Audio {
     }
 
     #[inline]
+    /// Get the channel layout map.
     pub fn channel_layout(&self) -> ChannelLayout {
         unsafe {
             ChannelLayout::from_bits_truncate(
@@ -71,6 +76,7 @@ impl Audio {
     }
 
     #[inline]
+    /// Set the channel layout map of audio frame.
     pub fn set_channel_layout(&mut self, value: ChannelLayout) {
         unsafe {
             av_frame_set_channel_layout(self.as_mut_ptr(), value.bits() as i64);
@@ -78,11 +84,13 @@ impl Audio {
     }
 
     #[inline]
+    /// Get the total amount of channels of audio frame.
     pub fn channels(&self) -> u16 {
         unsafe { av_frame_get_channels(self.as_ptr()) as u16 }
     }
 
     #[inline]
+    /// Set the total amount of channels of audio frame.
     pub fn set_channels(&mut self, value: u16) {
         unsafe {
             av_frame_set_channels(self.as_mut_ptr(), i32::from(value));
@@ -90,11 +98,13 @@ impl Audio {
     }
 
     #[inline]
+    /// Get the sample rate of audio.
     pub fn rate(&self) -> u32 {
         unsafe { av_frame_get_sample_rate(self.as_ptr()) as u32 }
     }
 
     #[inline]
+    /// Set the sample rate of audio.
     pub fn set_rate(&mut self, value: u32) {
         unsafe {
             av_frame_set_sample_rate(self.as_mut_ptr(), value as c_int);
@@ -102,11 +112,13 @@ impl Audio {
     }
 
     #[inline]
+    /// Get the total amount of samples.
     pub fn samples(&self) -> usize {
         unsafe { (*self.as_ptr()).nb_samples as usize }
     }
 
     #[inline]
+    /// Set the total amount of samples.
     pub fn set_samples(&mut self, value: usize) {
         unsafe {
             (*self.as_mut_ptr()).nb_samples = value as c_int;
@@ -114,16 +126,19 @@ impl Audio {
     }
 
     #[inline]
+    /// Check if the audio frame is planar formate.
     pub fn is_planar(&self) -> bool {
         self.format().is_planar()
     }
 
     #[inline]
+    /// Check if the audio frame is packed format.
     pub fn is_packed(&self) -> bool {
         self.format().is_packed()
     }
 
     #[inline]
+    /// Get the total amount of planes.
     pub fn planes(&self) -> usize {
         unsafe {
             if (*self.as_ptr()).linesize[0] == 0 {
@@ -139,6 +154,7 @@ impl Audio {
     }
 
     #[inline]
+    /// Get the sample in the given format.
     pub fn plane<T: Sample>(&self, index: usize) -> &[T] {
         if index >= self.planes() {
             panic!("out of bounds");
@@ -152,6 +168,9 @@ impl Audio {
     }
 
     #[inline]
+    /// Like [plane()], but the data is mutable.
+    ///
+    /// [plane()]: self::plane()
     pub fn plane_mut<T: Sample>(&mut self, index: usize) -> &mut [T] {
         if index >= self.planes() {
             panic!("out of bounds");
@@ -167,6 +186,7 @@ impl Audio {
     }
 
     #[inline]
+    /// Get audio data.
     pub fn data(&self, index: usize) -> &[u8] {
         if index >= self.planes() {
             panic!("out of bounds");
@@ -181,6 +201,9 @@ impl Audio {
     }
 
     #[inline]
+    /// Like [data()], but the data is mutable.
+    ///
+    /// [data()]: self::data()
     pub fn data_mut(&mut self, index: usize) -> &mut [u8] {
         if index >= self.planes() {
             panic!("out of bounds");

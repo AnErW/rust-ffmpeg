@@ -1,3 +1,4 @@
+//! Format input/output library
 pub use util::format::{pixel, Pixel};
 pub use util::format::{sample, Sample};
 use util::interrupt;

@@ -9,6 +9,7 @@ use libc::c_int;
 use media;
 use {Codec, Error};
 
+/// The codec context.
 pub struct Context {
     ptr: *mut AVCodecContext,
     owner: Option<Rc<dyn Drop>>,
@@ -20,7 +21,7 @@ impl Context {
     pub unsafe fn wrap(ptr: *mut AVCodecContext, owner: Option<Rc<dyn Drop>>) -> Self {
         Context { ptr, owner }
     }
-
+    
     pub unsafe fn as_ptr(&self) -> *const AVCodecContext {
         self.ptr as *const _
     }
@@ -31,6 +32,7 @@ impl Context {
 }
 
 impl Context {
+    /// Setup a new codec context.
     pub fn new() -> Self {
         unsafe {
             Context {
@@ -39,15 +41,16 @@ impl Context {
             }
         }
     }
-
+    /// Take the codec context into a decoder.
     pub fn decoder(self) -> Decoder {
         Decoder(self)
     }
-
+    /// Take the codec context into a encoder.
     pub fn encoder(self) -> Encoder {
         Encoder(self)
     }
-
+    /// Wrap with `Codec` if the `codec` field is not null,
+    /// and return `Some(Codec)`, or return `None`.
     pub fn codec(&self) -> Option<Codec> {
         unsafe {
             if (*self.as_ptr()).codec.is_null() {
@@ -57,33 +60,39 @@ impl Context {
             }
         }
     }
-
+    /// Get the codec type.
     pub fn medium(&self) -> media::Type {
         unsafe { media::Type::from((*self.as_ptr()).codec_type) }
     }
-
+    /// Set the AV_CODEC_FLAG_*.
     pub fn set_flags(&mut self, value: Flags) {
         unsafe {
             (*self.as_mut_ptr()).flags = value.bits() as c_int;
         }
     }
-
+    /// Get the id of codec.
     pub fn id(&self) -> Id {
         unsafe { Id::from((*self.as_ptr()).codec_id) }
     }
-
+    /// Set the standard(e.g.: MPEG-4) which the codec will be strictly
+    /// following.
     pub fn compliance(&mut self, value: Compliance) {
         unsafe {
             (*self.as_mut_ptr()).strict_std_compliance = value.into();
         }
     }
-
+    /// Set the debug flags.
+    ///
+    /// To checkout more debug flags, see: [Debug]
+    ///
+    /// [Debug]: crate::codec::debug::Debug
     pub fn debug(&mut self, value: Debug) {
         unsafe {
             (*self.as_mut_ptr()).debug = value.bits();
         }
     }
-
+    /// Set the mutitreading config which is used in 
+    /// mutithreading method.
     pub fn set_threading(&mut self, config: threading::Config) {
         unsafe {
             (*self.as_mut_ptr()).thread_type = config.kind.into();
@@ -92,6 +101,7 @@ impl Context {
         }
     }
 
+    /// Get the current mutithreading config.
     pub fn threading(&self) -> threading::Config {
         unsafe {
             threading::Config {
@@ -101,7 +111,7 @@ impl Context {
             }
         }
     }
-
+    /// Set the parameters of codec.
     pub fn set_parameters<P: Into<Parameters>>(&mut self, parameters: P) -> Result<(), Error> {
         let parameters = parameters.into();
 

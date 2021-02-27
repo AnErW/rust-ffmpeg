@@ -1,3 +1,4 @@
+//! Frames for decode/encode audio/video.
 pub mod side_data;
 pub use self::side_data::SideData;
 

@@ -2,6 +2,7 @@ use ffi::*;
 use libc::c_int;
 
 bitflags! {
+    /// The Debug Flags.
     pub struct Debug: c_int {
         const PICT_INFO   = FF_DEBUG_PICT_INFO;
         const RC          = FF_DEBUG_RC;

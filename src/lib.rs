@@ -1,3 +1,26 @@
+//! FFmpeg Rust Binding
+//! # About
+//! 
+//! This binding is a fork of [ffmpeg](https://crates.io/crates/ffmpeg) crate by [meh.](https://github.com/meh/rust-ffmpeg).
+//!
+//! Currently supported FFmpeg versions: 3.4.x through 4.3.x.
+//!
+//! Check out [wiki](https://github.com/zmwangx/rust-ffmpeg/wiki/Notes-on-building) for more build instructions.
+//!
+//! Documented by [AnErW](https://github.com/AnErW)
+//! 
+//! This document is still **WIP**, some documents may not be documented yet.
+//! # Documenting Process
+//! ## In Progress
+//! - codec
+//!   - decoder
+//!   - encoder
+//! - format
+//! - util
+//! ## Not Implement Yet
+//! - filter
+//! - software
+//! - device
 #![allow(non_camel_case_types)]
 #![allow(clippy::missing_safety_doc)]
 #![allow(clippy::module_inception)]
@@ -106,6 +129,7 @@ fn init_filter() {}
         and will be removed in a future version"
     )
 )]
+/// Init all FFmpeg service.
 pub fn init() -> Result<(), Error> {
     init_error();
     init_format();

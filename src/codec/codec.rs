@@ -5,6 +5,7 @@ use super::{Audio, Capabilities, Id, Profile, Video};
 use ffi::*;
 use {media, Error};
 
+/// FFmpeg Codec Implementation.
 #[derive(PartialEq, Eq, Copy, Clone)]
 pub struct Codec {
     ptr: *mut AVCodec,
@@ -28,18 +29,21 @@ impl Codec {
 }
 
 impl Codec {
+    /// Check the codec is a encoder or not.
     pub fn is_encoder(&self) -> bool {
         unsafe { av_codec_is_encoder(self.as_ptr()) != 0 }
     }
 
+    /// Check the codec is a decoder or not.
     pub fn is_decoder(&self) -> bool {
         unsafe { av_codec_is_decoder(self.as_ptr()) != 0 }
     }
 
+    /// Get the name of the codec.
     pub fn name(&self) -> &str {
         unsafe { from_utf8_unchecked(CStr::from_ptr((*self.as_ptr()).name).to_bytes()) }
     }
-
+    /// Get the description(long_name) of the codec.
     pub fn description(&self) -> &str {
         unsafe {
             let long_name = (*self.as_ptr()).long_name;
@@ -51,6 +55,7 @@ impl Codec {
         }
     }
 
+    ///
     pub fn medium(&self) -> media::Type {
         unsafe { media::Type::from((*self.as_ptr()).type_) }
     }
@@ -59,6 +64,7 @@ impl Codec {
         unsafe { Id::from((*self.as_ptr()).id) }
     }
 
+    /// Check if a codec is a video codec.
     pub fn is_video(&self) -> bool {
         self.medium() == media::Type::Video
     }
@@ -73,6 +79,7 @@ impl Codec {
         }
     }
 
+    /// Check if a codec is an audio codec.
     pub fn is_audio(&self) -> bool {
         self.medium() == media::Type::Audio
     }
@@ -95,6 +102,7 @@ impl Codec {
         unsafe { Capabilities::from_bits_truncate((*self.as_ptr()).capabilities as u32) }
     }
 
+    /// Get profiles of codec. Return `None` if the profile is unknown.
     pub fn profiles(&self) -> Option<ProfileIter> {
         unsafe {
             if (*self.as_ptr()).profiles.is_null() {
